@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html> 
+<head> 
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8" /> 
+  <title>Google Maps Multiple Markers</title> 
+  <script src="http://maps.google.com/maps/api/js?sensor=false" 
+          type="text/javascript"></script>
+</head> 
+<body>
+  <div id="map" style="width: 100%; height: 620px;"></div>
+
+  <script type="text/javascript">
+    var locations = [
+      ['Nyagatare', -1.338694, 30.342550, 8], 
+      ['Gicumbi', -1.731313, 30.114584, 5], 
+      ['Narutarama', -1.942691, 30.100851, 3],
+      ['Kibungo', -2.107977, 29.934437  , 2],
+      ['Nyabihu', -1.929560, 30.134937, 1],
+      ['Nyabihu', -1.970735, 30.121204, 1],
+      ['Nyabihu', -1.910344, 30.104725, 1],
+      ['Nyabihu', -1.915834, 30.071766, 1],
+      ['Nyabihu', -1.915834, 30.099232, 1],
+      ['Nyabihu', -1.924070, 30.058033, 1],
+      ['Nyabihu', -1.943285, 30.115711, 1],
+
+      ['Gisenyi', -1.670136, 29.290363, 1],
+      ['Rubavu', -1.683863, 29.321949, 1],
+      ['RUbavu', -1.689354, 29.251911, 1],
+      ['Nyabihu', -1.703080, 29.280750, 1],
+      ['Nyabihu', -1.678372, 29.319202, 1],
+      ['Nyabihu', -1.653663, 29.323322, 1],
+      ['Nyabihu', -1.604245, 29.319202, 1],
+            ['Gisenyi', -2.188944, 30.729572, 1],
+      ['Rubavu', -2.320677, 30.537311, 1],
+      ['RUbavu', -2.271279, 30.378009, 1],
+      ['Nyabihu', -2.029750, 30.383503, 1],
+      ['Nyabihu', -1.941912, 30.608722, 1],
+      ['Nyabihu', -2.578620, 28.966266, 1],
+      ['Nyabihu', -2.007791, 29.416706, 1],
+    ];
+
+    var map = new google.maps.Map(document.getElementById('map'), {
+      zoom: 9,
+      center: new google.maps.LatLng(-1.9900,29.9999),
+      mapTypeId: google.maps.MapTypeId.ROADMAP,
+      draggable: false,
+      scaleControl: true,
+      scrollwheel: false,
+    });
+    
+
+    var infowindow = new google.maps.InfoWindow();
+
+    var marker, i;
+
+    for (i = 0; i < locations.length; i++) {  
+      marker = new google.maps.Marker({
+        position: new google.maps.LatLng(locations[i][1], locations[i][2]),
+        map: map
+      });
+
+      google.maps.event.addListener(marker, 'click', (function(marker, i) {
+        return function() {
+          infowindow.setContent(locations[i][0]);
+          infowindow.open(map, marker);
+        }
+      })(marker, i));
+    }
+  </script>
+</body>
+</html>
