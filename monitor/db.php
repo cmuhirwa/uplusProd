@@ -1,3 +1,3 @@
 <?php
-		$con = mysqli_connect("localhost", "root", "" , "rtgs");
+		$con = mysqli_connect("localhost", "root", "clement123" , "rtgs");
 ?>
