@@ -3,6 +3,9 @@
 <h5>
 
 <?php
+error_reporting(E_ALL);
+ini_set('display_errors', 0);
+	
 include "db.php";
 if (isset($_GET['sentAmount'])) {
 	$forGroupId		= 	$_GET['forGroupId'];		// COmpanyID
@@ -101,7 +104,7 @@ if (isset($_GET['sentAmount'])) {
 	}
 // STRAT API HERE //////////////////////////
 			
-			$url = 'http://lightapi.torque.co.rw:8080/requestpayment/';
+			$url = 'http://51.141.48.174:9000/requestpayment/';
 	
 	$data = array();
 	$data["agentName"] = "UPLUS";
@@ -120,12 +123,16 @@ if (isset($_GET['sentAmount'])) {
 	$result = file_get_contents($url, false, $context);
 	if ($result === FALSE) 
 	{ 
-		var_dump($result);	
-	}
-	$server_output = $result;
+		//var_dump($result);
+		echo 'We are having some connectivity issue connecting to the 3rdparty.<br>
+		Please try again.';	
+	}else{
+		$server_output = $result;
 	
 			// FROM JSON TO PHP
 			$firstcheck = json_decode($server_output);
+			$agentName = $firstcheck->{'agentName'};
+			$balance = $firstcheck->{'balance'};
 			$check1 = $firstcheck->{'information'};
 			$check2 = $firstcheck->{'information2'};
 			$transactionId1 = $firstcheck->{'transactionId'};
@@ -137,13 +144,18 @@ if (isset($_GET['sentAmount'])) {
 			$_SESSION["forGroupId"]			= $forGroupId;
 			$_SESSION["ToTransactionId"] 	= $ToTransactionId;
 	
+			if($check1 == 'You sent invalid amounts. Error: 404.'){
+				echo $agentName.' pull balance at Torque is: '.$balance;
+			}
+			else{
+				$Update1= $con->query("UPDATE `transactions` SET status='$check1', 3rdpartyId='$transactionId1' WHERE id = '$fromTransactionId'");
+				$Update2= $con->query("UPDATE `transactions` SET status='$check2', 3rdpartyId='$transactionId1' WHERE id = '$ToTransactionId'");
+				// 1ST STATUS CONNECTED TO THE API WAITNING FOR MTN RESPONSE
 			
-			$Update1= $con->query("UPDATE `transactions` SET status='$check1', 3rdpartyId='$transactionId1' WHERE id = '$fromTransactionId'");
-			$Update2= $con->query("UPDATE `transactions` SET status='$check2', 3rdpartyId='$transactionId1' WHERE id = '$ToTransactionId'");
-			// 1ST STATUS CONNECTED TO THE API WAITNING FOR MTN RESPONSE
-			echo'<div id="returning">'.$check1.'</div>';
-			// FIRE THE RECURRING CALL AFTER 5 SEC TO CHECK THE STATUS
-			echo'
+				echo'<div id="returning">'.$check1.' <button class="btn btn-danger">Cancel</button></div>';
+				
+				// FIRE THE RECURRING CALL AFTER 5 SEC TO CHECK THE STATUS
+				echo'
 				<script>
 					interval = setInterval(function() { checking();}, 10000);
 					interval;
@@ -152,7 +164,9 @@ if (isset($_GET['sentAmount'])) {
 							stopit();
 						}, 50000);
 					stopcall;
-				</script>';
+				</script>';}
+			
+	}
 
 }
 // END API HERE /////////////////////////
@@ -169,7 +183,7 @@ if(isset($_GET['check']))
 	$forGroupId			= $_SESSION["forGroupId"];
 
     $data = json_decode($server_output);
-	$url = 'http://lightapi.torque.co.rw:8080/requestpayment/';
+	$url = 'http://51.141.48.174:9000/requestpayment/';
 	$options = array(
 		'http' => array(
 			'header'  => "Content-type: application/x-www-form-urlencoded\r\n",
