@@ -22,61 +22,60 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <title>Transfers</title>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link rel="stylesheet" href="css/bootstrap.min.css">
+	<title>Transfers</title>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="stylesheet" href="css/bootstrap.min.css">
 	<script type="text/javascript" src="js/jquery.min.js"></script>
-        <script type="text/javascript">
-            $(document).ready(function() {
-                var options = {
-                    chart: {
-                        renderTo: 'container',
-                        type: 'area'
-                    },
-                    title: {
-                        text: '',
-                        x: -20 //center
-                    },
-                    xAxis: {
-                        categories: [],
-                        title: {
-                            text: 'Days'
-                        }
-                    },
-                    yAxis: {
-                        title: {
-                            text: 'Transfers'
-                        },
-                        plotLines: [{
-                                value: 0,
-                                width: 1,
-                                color: '#808080'
-                            }]
-                    },
-                    tooltip: {
-                        valueSuffix: 'Transaction/Days'
-                    },
-                    legend: {
-                        layout: 'vertical',
-                        align: 'right',
-                        verticalAlign: 'middle',
-                        borderWidth: 0
-                    },
-                    series: []
-                };
-                $.getJSON("data.php", function(json) {
-                    options.xAxis.categories = json[0]['data']; //xAxis: {categories: []}
-                    options.series[0] = json[1];
-                    chart = new Highcharts.Chart(options);
-                });
-            });
-        </script>
-        <script src="js/highchats.js"></script>
-       
+	<script type="text/javascript">
+		$(document).ready(function() {
+			var options = {
+				chart: {
+					renderTo: 'container',
+					type: 'area'
+				},
+				title: {
+					text: '',
+					x: -20 //center
+				},
+				xAxis: {
+					categories: [],
+					title: {
+						text: 'Days'
+					}
+				},
+				yAxis: {
+					title: {
+						text: 'Transfers'
+					},
+					plotLines: [{
+							value: 0,
+							width: 1,
+							color: '#808080'
+						}]
+				},
+				tooltip: {
+					valueSuffix: 'Transaction/Days'
+				},
+				legend: {
+					layout: 'vertical',
+					align: 'right',
+					verticalAlign: 'middle',
+					borderWidth: 0
+				},
+				series: []
+			};
+			$.getJSON("data.php", function(json) {
+				options.xAxis.categories = json[0]['data']; //xAxis: {categories: []}
+				options.series[0] = json[1];
+				chart = new Highcharts.Chart(options);
+			});
+		});
+	</script>
+	<script src="js/highchats.js"></script>  
 </head>
-<body>
 
+<body>
 <nav class="navbar navbar-default">
   <div class="container">
     <div class="navbar-header">
@@ -142,8 +141,10 @@
         <div class="container">
 			<div class="row">
 				<div class="col-md-3">
-				
 					<h4>Test Transfer</h4>
+					Amount: 
+						<input type="text" id="amountdone" class="form-control">
+						<br>
 					Use: <select class="form-control" id="payMeth" onchange="givePay()" required>
 							  <option></option>
 							  <option value="phone">Phone</option>
@@ -151,12 +152,16 @@
 							</select><br>
 					  <div id="meth">
 						From: 
-						<input type="text" disabled class="form-control">
+						<input type="text" id="mtnnumber" disabled class="form-control">
 					  </div><br>
 						To: 
-						<input type="text" class="form-control">
+						<input type="text" id="sendToAccount" class="form-control">
 						<br>
-					  <button class="btn btn-primary">SEND</button>
+					  <button onclick="kwishura()" class="btn btn-primary">SEND</button>
+					  <br/><br/>
+				</div>
+				<div class="col-md-3" style="background:#007569; border-radius: 4px; height:100%; padding: 60px" id="donetransfer">
+					<button onclick="kwishura()" class="btn btn-warning">Check Balance</button>
 				</div>
 			</div>
 		</div>
@@ -166,14 +171,13 @@
   <div class="footer">
   </div>
 </div>
-<script src="js/jquery.js"></script>
 <script>
 function givePay()
 {
 	var payMeth = document.getElementById('payMeth').value;
 	if(payMeth == 'phone')
 	{
-		document.getElementById('meth').innerHTML = 'From: <input type="text" placeholder="eg: 0788888888 or 0722222222" required class="form-control">';
+		document.getElementById('meth').innerHTML = 'From: <input type="text" id="mtnnumber" placeholder="eg: 0788888888 or 0722222222" required class="form-control">';
 	}
 	else if(payMeth == 'card')
 	{
@@ -185,5 +189,116 @@ function givePay()
 	}
 }
 </script>
+
+<!--AJAX CALL THE STATUS-->
+<script>
+function checking(){
+	var check =1;
+	//alert('ChecKing Status');
+	$.ajax({
+		type : "GET",
+		url : "../3rdparty/rtgs/transfer.php",
+		dataType : "html",
+		cache : "false",
+		data : {
+			
+			check : check,
+		},
+		success : function(html, textStatus){
+			//alert('incoming Status');
+			$("#donetransfer").html(html);
+			
+		},
+		error : function(xht, textStatus, errorThrown){
+			alert("Error : " + errorThrown);
+		}
+	});
+}
+function stopit()
+	{
+		clearInterval(interval);
+		document.getElementById('status').innerHTML = 'Canceled.';
+	}
+</script>
+
+<script>
+// Display a recurrunf Invitation
+function kwishura(){
+	var forGroupId			= 1;
+	var sentAmount			= document.getElementById('amountdone').value;
+	var sendFromAccount		= document.getElementById('mtnnumber').value;
+	var sendFromName		= 'Monitor';
+	var sendToBank			= 1;
+	var sendToAccount		= document.getElementById('sendToAccount').value;
+	var method				= 8;
+	if(method == '8'){
+		var sendFromBank = 1;
+	}
+	else if(method == '2'){
+		var sendFromBank = 2;
+	}
+	var realphone1 			= sendFromAccount.substring(sendFromAccount.indexOf("7"));
+	var prephone2 			= sendToAccount.substring(sendToAccount.indexOf("7"));
+	var realphone2 			= '250'+prephone2;
+		
+	document.getElementById('donetransfer').innerHTML = '<div style="text-align: center;padding-top:10px; color: #fff; text-shadow: 1px 1px 2px #000000;"><h5>Connecting...<span id="time">00:30</span></h5></div>';
+	
+	var fiveMinutes = 30,
+        display = document.querySelector('#time');
+    startTimer(fiveMinutes, display);
+	
+	$.ajax({
+			type : "GET",
+			url : "../3rdparty/rtgs/transfer.php",
+			dataType : "html",
+			cache : "false",
+			data : {
+				
+				forGroupId		:	forGroupId,	
+				sentAmount		:	sentAmount,	
+				phone1 			: 	realphone1,
+				phone2 			: 	realphone2,
+				sendFromName	:	sendFromName,
+				
+				sendFromAccount	:	realphone1,	
+				sendFromBank	:   sendFromBank,	
+				sendToBank		:   sendToBank,		
+				sendToAccount	:   sendToAccount,
+								
+			},
+			success : function(html, textStatus){
+				$("#donetransfer").html(html);
+				document.getElementById('doneMtn').innerHTML = '';
+			},
+			error : function(xht, textStatus, errorThrown){
+				alert("Error : " + errorThrown);
+			}
+	});
+}
+</script>
+
+<script>
+function startTimer(duration, display) {
+    var timer = duration, minutes, seconds;
+    setInterval(function () {
+        minutes = parseInt(timer / 60, 10)
+        seconds = parseInt(timer % 60, 10);
+
+        minutes = minutes < 10 ? "0" + minutes : minutes;
+        seconds = seconds < 10 ? "0" + seconds : seconds;
+
+        display.textContent = minutes + ":" + seconds;
+
+        if (--timer < 0) {
+            timer = duration;
+        }
+    }, 1000);
+}
+
+</script>
+
+
 </body>
 </html>
+
+
