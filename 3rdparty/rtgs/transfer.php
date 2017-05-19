@@ -301,6 +301,53 @@ if(isset($_GET['check']))
 </div>
 
 <?php // VISA AND MASTER CARDS
+if(isset($_POST['bkVisa'])){
+	require __DIR__ . '/function.php';
+	$amount = $_POST['field1'];
+	$currency = $_POST['currency'];
+	$orderInfo = 'ORDER34525';
+	
+	$accountData = array(
+		'merchant_id' => 'TESTBOK000009',
+		'access_code' => '325B081C',
+		'secret'      => 'D566F4162F2D922E0B882BB551E11F7D'
+	);
+	if($currency=="RWF"){
+		// $_PDT['vpc_Currency']=646;
+		$mult = 1;
+	}elseif($currency=="USD"){
+		// $_PDT['vpc_Currency']=840;
+		$mult = 100;
+	}
+	$queryData = array(
+		'vpc_AccessCode' => $accountData['access_code'],
+		'vpc_Merchant' => $accountData['merchant_id'],
+
+		'vpc_Amount' => ($amount * $mult), // Multiplying by 100 to convert to the smallest unit
+		'vpc_OrderInfo' => $orderInfo,
+
+		'vpc_MerchTxnRef' => generateMerchTxnRef(), // See functions.php file
+
+		'vpc_Command' => 'pay',
+		'vpc_Currency' => $currency,
+		'vpc_Locale' => 'en',
+		'vpc_Version' => 1,
+		'vpc_ReturnURL' => 'http://localhost/payments/bk/return_url.php',
+
+		'vpc_SecureHashType' => 'SHA256'
+	);
+
+	// Add secure secret after hashing
+	$queryData['vpc_SecureHash'] = generateSecureHash($accountData['secret'], $queryData); // See functions.php file
+
+	// 
+	$migsUrl = 'https://migs.mastercard.com.au/vpcpay?'.http_build_query($queryData);
+
+	// Redirect to the bank website to continue the 
+	header("Location: " . $migsUrl);
+
+}
+	
 if(isset($_POST['stripeToken'])){
 	session_start();
 	$originalPhone = '784848236';
