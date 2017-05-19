@@ -390,7 +390,7 @@ elseif($method == '4'){echo'
 
 <script>
 function frontpayement2(method){
-	alert(method);
+	//alert(method);
 	var contributedAmount =$("#contributedAmount").val();
 	var currency =$("#currency").val();
 	var forGroupId =$("#forGroupId").val();
