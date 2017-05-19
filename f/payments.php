@@ -136,29 +136,34 @@ if(isset($_GET['forGroupId'])){
 echo '<input id="forGroupId" hidden value="'.$forGroupId.'"/>';
 echo '<input id="forGroupName" hidden value="'.$forGroupName.'"/>';
 ?>
-	<div class="form-style-2">
-<label for="field1" style="width: 100%;">
-	<span style="font-size: 18px">Amount <span class="required">*</span>
-	</span>
-	<input placeholder="0.00" style="
-    width: 45%;
-" class="input-field" name="field1" type="number" id="contributedAmount">
-	<span ><select style="
-    width: 33%;
-" class="select-field" id="currency">
-		<option value="RWF">Rwandan Francs</option>
-		<?php echo $currencyList;?>
-	<select>
-	</span>
-</label>
-<h6><div id="amountError" style="color: #f44336;"></div></h6>
+<form id="payform" method="post" action="../3rdparty/rtgs/transfer.php">
+<input name="bkVisa" hidden />
+<div class="form-style-2">
+	<label for="field1" style="width: 100%;">
+		<span style="font-size: 18px">Amount <span class="required">*</span>
+		</span>
+		<input placeholder="0.00" style="width: 45%;" class="input-field" name="field1" type="number" id="contributedAmount">
+		<span>
+			<select style="width: 33%;" class="select-field" name="currency" id="currency">
+				<option value="RWF">Rwandan Francs</option>
+				<?php echo $currencyList;?>
+			</select>
+		</span>
+	</label>
+	<h6><div id="amountError" style="color: #f44336;"></div></h6>
 	<div class="mdl-grid mdl-grid--no-spacing" >
-		<div class="mdl-cell mdl-cell--4-col"> <a href="javascript:void()" onclick="frontpayement2(method=1)"><div style="border-radius: 3px; background-image: url(images/1.jpg); background-size: 100% 100%; height: 90px; margin: 5px; box-shadow: 0.5px 0.5px 0.25px 0.25px #888888;"></div></a></div>
-		<div class="mdl-cell mdl-cell--4-col"> <a href="javascript:void()" onclick="frontpayement2(method=2)"><div style="border-radius: 3px; background-image: url(images/2.jpg); background-size: 100% 100%; height: 90px; margin: 5px; box-shadow: 0.5px 0.5px 0.25px 0.25px #888888;"></div></a></div>
-		<div class="mdl-cell mdl-cell--4-col"> <a href="javascript:void()" onclick="frontpayement2(method=3)"><div style="border-radius: 3px; background-image: url(../proimg/banks/4.png); background-size: 100% 100%; height: 90px; margin: 5px; box-shadow: 0.5px 0.5px 0.25px 0.25px #888888;"></div></a></div>
+		<div class="mdl-cell mdl-cell--4-col pbtn" style="width: 30%"> <a href="javascript:void()" onclick="frontpayement2(method=1); alert()"><div style="border-radius: 3px; background-image: url(images/1.jpg); background-size: 100% 100%; height: 90px; margin: 5px; box-shadow: 0.5px 0.5px 0.25px 0.25px #888888;"></div></a></div>
+		<div class="mdl-cell mdl-cell--4-col pbtn" style="width: 30%"> <a href="javascript:void()" onclick="frontpayement2(method=2)"><div style="border-radius: 3px; background-image: url(images/2.jpg); background-size: 100% 100%; height: 90px; margin: 5px; box-shadow: 0.5px 0.5px 0.25px 0.25px #888888;"></div></a></div>
+		<div class="mdl-cell mdl-cell--4-col pbtn" style="width: 30%"> <a href="javascript:void()" onclick="payVisa()"><div  style="border-radius: 3px; background-image: url(../proimg/banks/4.png); background-size: 100% 100%; height: 90px; margin: 5px; box-shadow: 0.5px 0.5px 0.25px 0.25px #888888;"></div></a></div>
 	</div>
 </div>
- 
+</form>
+<script>
+function payVisa()
+ {
+      document.getElementById('payform').submit();
+ }
+</script>
 <?php
 }
 elseif(isset($_GET['method'])){
@@ -385,7 +390,7 @@ elseif($method == '4'){echo'
 
 <script>
 function frontpayement2(method){
-	//alert(method);
+	alert(method);
 	var contributedAmount =$("#contributedAmount").val();
 	var currency =$("#currency").val();
 	var forGroupId =$("#forGroupId").val();
