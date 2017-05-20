@@ -1,51 +1,51 @@
-		<?php
-		//error_reporting(E_ALL); 
-		//ini_set('display_errors', 1);
-		if (isset($_GET['groupId'])){	
-				$groupID = $_GET['groupId'];
-				require_once "parsedown/Parsedown.php";
-				$parsedown = new parsedown();
-				include "../db.php"; 
-				$sql2 = $db->query("SELECT * FROM accounts WHERE id='$groupID'"); 
-				while($row = mysqli_fetch_array($sql2)){ 
-					$groupName = $row["accName"];
-					$saving = round($row['saving']);
-					$adminPhone = $row['adminPhone'];
-					$adminName = $row['adminName'];
-					$currentAmount = round($row['currentAmount']);
-					$groupDesc = $row["groupDesc"];
-					$groupStory = $parsedown->text($row["groupStory"]);
-					$groupBank = $row["bankaccount"];
-					$custommessage = $row["custommessage"];
-					$replymessage = $row["replymessage"];
-					$contributionDate = $row["opening"];
-					$createdDate = $row["createdDate"];
-					
-					$sqlbalance = $outCon->query("SELECT * FROM groupbalance WHERE groupId = '$groupID'");
-					$balanceCount = mysqli_num_rows($sqlbalance);
+<?php
+//error_reporting(E_ALL); 
+//ini_set('display_errors', 1);
+if (isset($_GET['groupId'])){	
+		$groupID = $_GET['groupId'];
+		require_once "parsedown/Parsedown.php";
+		$parsedown = new parsedown();
+		include "../db.php"; 
+		$sql2 = $db->query("SELECT * FROM accounts WHERE id='$groupID'"); 
+		while($row = mysqli_fetch_array($sql2)){ 
+			$groupName = $row["accName"];
+			$saving = round($row['saving']);
+			$adminPhone = $row['adminPhone'];
+			$adminName = $row['adminName'];
+			$currentAmount = round($row['currentAmount']);
+			$groupDesc = $row["groupDesc"];
+			$groupStory = $parsedown->text($row["groupStory"]);
+			$groupBank = $row["bankaccount"];
+			$custommessage = $row["custommessage"];
+			$replymessage = $row["replymessage"];
+			$contributionDate = $row["opening"];
+			$createdDate = $row["createdDate"];
+			
+			$sqlbalance = $outCon->query("SELECT * FROM groupbalance WHERE groupId = '$groupID'");
+			$balanceCount = mysqli_num_rows($sqlbalance);
 
-					$rowbalance = mysqli_fetch_array($sqlbalance);
-					$currentAmount = $rowbalance['Balance'];
-					if($balanceCount == 0){
-						$currentAmount = 0;
-					}
-					$prog = $currentAmount*100/$saving;
-					$progressing =$prog + (20*$prog/100);
-					
-				}
-				$sqladminID = $db->query("SELECT id adminID, gender adminGender FROM users WHERE phone = '$adminPhone'");
-				$fetchAdminID = $rowAdminID = mysqli_fetch_array($sqladminID);
-				$adminID = $rowAdminID["adminID"];
-				$adminGender = $rowAdminID["adminGender"];
-				
-				if($currentAmount == ''){
-					$currentAmount = 0;
-				}
+			$rowbalance = mysqli_fetch_array($sqlbalance);
+			$currentAmount = $rowbalance['Balance'];
+			if($balanceCount == 0){
+				$currentAmount = 0;
 			}
-		else{
-			echo 'nothig isset';
+			$prog = $currentAmount*100/$saving;
+			$progressing =$prog + (20*$prog/100);
+			
 		}
-		?>
+		$sqladminID = $db->query("SELECT id adminID, gender adminGender FROM users WHERE phone = '$adminPhone'");
+		$fetchAdminID = $rowAdminID = mysqli_fetch_array($sqladminID);
+		$adminID = $rowAdminID["adminID"];
+		$adminGender = $rowAdminID["adminGender"];
+		
+		if($currentAmount == ''){
+			$currentAmount = 0;
+		}
+	}
+else{
+	echo 'nothig isset';
+}
+?>
 
 		<!doctype html>
 
@@ -106,6 +106,63 @@
 
 	<link rel="stylesheet" href="css/popup-polyfill.min.css">
 	<link rel="stylesheet" href="styles.css">
+	
+	
+	
+	<!-- Add jQuery library -->
+	<script type="text/javascript" src="fancy/jquery-1.10.2.min.js"></script>
+
+	<!-- Add fancyBox main JS and CSS files -->
+	<script type="text/javascript" src="fancy/jquery.fancybox.pack.js?v=2.1.5"></script>
+	<link rel="stylesheet" type="text/css" href="fancy/jquery.fancybox.css?v=2.1.5" media="screen" />
+	
+	<!-- Add Thumbnail helper (this is optional) -->
+	<link rel="stylesheet" type="text/css" href="fancy/jquery.fancybox-thumbs.css?v=1.0.7" />
+	<script type="text/javascript" src="fancy/jquery.fancybox-thumbs.js?v=1.0.7"></script>
+
+	
+	<script type="text/javascript">
+		$(document).ready(function() {
+			
+			$('.fancybox-thumbs').fancybox({
+				prevEffect : 'none',
+				nextEffect : 'none',
+
+				padding: 0,
+				
+				openEffect : 'elastic',
+				openSpeed  : 150,
+
+				closeEffect : 'elastic',
+				closeSpeed  : 150,
+				
+				arrows    : false,
+				nextClick : true,
+
+				helpers : {
+					thumbs : {
+						width  : 50,
+						height : 50
+					}
+				}
+				
+				
+
+
+
+			});
+
+			
+
+		});
+	</script>
+	<style type="text/css">
+		.fancybox-custom .fancybox-skin {
+			box-shadow: 0 0 50px #222;
+		}
+	</style>
+
+	
 </head>
 <body class="mdl-demo mdl-color--grey-100 mdl-color-text--grey-700 mdl-base">
 		    <script>
@@ -194,20 +251,12 @@
 				<span style="text-align: left;"><i class="fa fa-camera"></i></span>
 				<span style="text-align: left;"><a href="javascript:void()" style="    font-size: 13px;
     font-weight: 400;">1 Pictures and Videos</a></span>
-			</div>
+	</div>
 			<div style="margin: -5px 0 0 -5px; max-height: 176px;overflow: hidden;">
-				<span style="    background-image: url(../temp/group<?php echo $groupID;?>.jpeg);
-    border-radius: 4px;
-    cursor: pointer;
-    float: left;
-    height: 83px;
-    margin: 5px 0 0 5px;
-    overflow: hidden;
-    position: relative;
-    width: 83px;
-    background-size: cover;
-    background-repeat: no-repeat;
-    background-position: center center;"></span>
+				<p>
+					<a class="fancybox-thumbs" data-fancybox-group="thumb" href="../temp/group<?php echo $groupID;?>.jpeg"><span style="background-image: url(../temp/group<?php echo $groupID;?>.jpeg);" class="gallery"></span></a>
+	
+	</p>
 			</div>
 		</div>
 	</div>
@@ -279,7 +328,7 @@
 						<span style="float: right" id="countDown"></span>
 					</div>
 					<div class="mdl-cell mdl-cell--4-col" id="contdiv">
-						<button  href="javascript:void()" onclick="frontpayementOptions()"  class="mdl-button mdl-button--raised dialog-button" id="contbtn">Contribute Now</button>
+						<button  href="javascript:void()" class="mdl-button mdl-button--raised dialog-button" id="contbtn">Contribute Now</button>
 					</div>
 					</div>
 					
@@ -303,6 +352,7 @@
 					<section class="section--center mdl-grid mdl-grid--no-spacing mdl-shadow--2dp" style="margin-bottom: 30px; max-width: 730px;">
 		            	<div class="mdl-card mdl-cell mdl-cell--12-col" id="tabsCont" style="padding: 12px; min-height: 80px;">
 							<?php echo $groupStory;?>
+							
 						</div> 
 					</section>
 				</div>
@@ -366,51 +416,43 @@
 		      </main>
 		    </div>
 			<dialog id="dialog" class="mdl-dialog" style="padding:0px;">
-  <div class="mdl-dialog__actions" style="padding:2px;text-align: center;
-    display: block;font-size: 20px;    background: #007569;
-    color: #fff;">
-    Money Transfer
-  </div>
-  <div class="mdl-dialog__content" style="padding:0px;    border-bottom: solid #ccc 0.1px;" id="contBody">
-    </div>
-  <div class="mdl-dialog__actions" id="actionbc" style="padding:0px; display: block;">
-	<button type="button" class="mdl-button btn-danger">Close</button>
-  
-  </div>
-  
-</dialog>	 
+				<div class="mdl-dialog__actions" style="padding:2px;text-align: center; display: block;font-size: 20px;    background: #007569; color: #fff;">
+					Money Transfer
+				</div>
+				<div class="mdl-dialog__content" style="padding:0px; border-bottom: solid #ccc 0.1px;" id="contBody">
+					<form id="payform" method="post" action="../3rdparty/rtgs/transfer.php">
+						<input name="bkVisa" hidden />
+						<div class="form-style-2">
+							<label for="field1" style="width: 100%;">
+								<span style="font-size: 18px">Amount <span class="required">*</span>
+								</span>
+								<input placeholder="0.00" style="width: 45%;" class="input-field" name="field1" type="number" id="contributedAmount">
+								<span>
+									<select style="width: 33%;" class="select-field" name="currency" id="currency">
+										<option value="RWF">Rwandan Francs</option>
+										<option value="USD">US Dolar</option>
+									</select>
+								</span>
+							</label>
+							<h6><div id="amountError" style="color: #f44336;"></div></h6>
+							<div class="mdl-grid mdl-grid--no-spacing" >
+								<div style="width: 30%"> <a href="javascript:void()" onclick="frontpayement2(method=1)"><div style="border-radius: 3px; background-image: url(images/1.jpg); background-size: 100% 100%; height: 90px; margin: 5px; box-shadow: 0.5px 0.5px 0.25px 0.25px #888888;"></div></a></div>
+								<div style="width: 30%"> <a href="javascript:void()" onclick="frontpayement2(method=2)"><div style="border-radius: 3px; background-image: url(images/2.jpg); background-size: 100% 100%; height: 90px; margin: 5px; box-shadow: 0.5px 0.5px 0.25px 0.25px #888888;"></div></a></div>
+								<div style="width: 30%"> <a href="javascript:void()" onclick="payVisa()"><div  style="border-radius: 3px; background-image: url(../proimg/banks/4.png); background-size: 100% 100%; height: 90px; margin: 5px; box-shadow: 0.5px 0.5px 0.25px 0.25px #888888;"></div></a></div>
+							</div>
+						</div>
+					</form>
+				</div>
+				<div class="mdl-dialog__actions" id="actionbc" style="padding:0px; display: block;">
+					<button type="button" class="mdl-button btn-danger">Close</button>
+				</div>
+			</dialog>	 
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
 <script src="js/popup-polyfill.min.js"></script>
 
 		    <script src="https://code.getmdl.io/1.3.0/material.min.js"></script>
-			<script src="../assets/js/jquery.js"></script>
 			
 		  <!-- MDL Progress Bar with Buffering -->
-		<script>
-		function frontpayementOptions(){
-			//document.getElementById('actionbc').innerHTML ='<button type="button" class="mdl-button btn-danger">Close</button>';
-		var forGroupId	= <?php echo $groupID;?>;
-		var forGroupName	= 'groupName';
-		document.getElementById('contBody').innerHTML ='<div class="loader"></div>';
-			$.ajax({
-					type : "GET",
-					url : "payments.php",
-					dataType : "html",
-					cache : "false",
-					data : {
-						forGroupId : forGroupId,
-						forGroupName : forGroupName,
-					},
-					success : function(html, textStatus){
-						$("#contBody").html(html);
-					//	document.getElementById('contdiv').innerHTML='<button class="mdl-button" id="discontbtn">Contribute Now</button>';
-					},
-					error : function(xht, textStatus, errorThrown){
-						alert("Error : " + errorThrown);
-					}
-			});
-		}
-		</script>
 		<script>
 		document.getElementById('shareBtn').onclick = function() {
 			//alert('done');
@@ -491,7 +533,94 @@ document.getElementById("defaultOpen").click();
 	});
 	});
 </script>
-	<script type="text/javascript" src="../assets/js/timer.js"></script>
 
+<script type="text/javascript" src="../assets/js/timer.js"></script>
+<script src="js/js.js"></script>
+
+<!-- SEND METHOD AND GET ME THE PHONE INPUT-->
+<script>
+function frontpayement2(method)
+{
+	var forGroupId = <?php echo $groupID;?>;
+	var contributedAmount =$("#contributedAmount").val();
+	var currency =$("#currency").val();
+	/*if (!currency == 'RWF') 
+		{
+			document.getElementById('amountError').innerHTML = 'For MTN and TIGO we only RWF currency';
+			return false;
+		}
+	*/
+	if (contributedAmount == null || contributedAmount == "") 
+		{
+			document.getElementById('amountError').innerHTML = 'Contributed Amount must be  out';
+			return false;
+		}
+	if (contributedAmount < 100) 
+		{
+			document.getElementById('amountError').innerHTML = 'The minimum contribution allowed is 100 Rwf';
+			return false;
+		}
+		document.getElementById('contBody').innerHTML = '<div style="margin: 100px;">Loading...</div>';
+			
+		$.ajax({
+			type : "GET",
+			url : "payments.php",
+			dataType : "html",
+			cache : "false",
+			data : {
+				method : method,
+				contributedAmount : contributedAmount,
+				forGroupId1 : forGroupId,
+			},
+			success : function(html, textStatus){
+				$("#contBody").html(html);
+			},
+			error : function(xht, textStatus, errorThrown){
+				alert("Error : " + errorThrown);
+			}
+	});
+}
+function payVisa()
+ {
+      document.getElementById('payform').submit();
+ }
+</script>
+<!-- GET ME THE DONE BTN -->
+<script>
+function handleChange(input)
+{
+	var method = document.getElementById('opperator').value;
+	if (method == '1') 
+	{
+		var opperator = 'MTN';
+		var errorcolor = '#e91e63;';
+	}
+	else if (method == '2') 
+	{
+		var opperator = 'TIGO';
+		var errorcolor = '#fff;';
+	}
+	else if (method == '3') 
+	{
+		var opperator = 'AIRTEL';
+		var errorcolor = '#fff;';
+	}
+    if ( input.value < 1000000) 
+	{
+		document.getElementById('alowMtn').innerHTML = '<div style="color: '+errorcolor+'"> Keep typing till you get a Done button</div>';
+		document.getElementById('doneMtn').innerHTML = '';
+	}
+    else if (input.value > 9999999) 
+	{
+		document.getElementById('alowMtn').innerHTML = '<div style="color: '+errorcolor+'">Please enter a valid '+opperator+' Rwanda number</div>';
+		document.getElementById('doneMtn').innerHTML = '';
+	}
+	else
+	{
+		document.getElementById('alowMtn').innerHTML = '';
+		document.getElementById('doneMtn').innerHTML = '<button class="myButton" onclick="kwishura()"><i class="icon md-check"></i>Done</button>';
+	}
+}
+</script>
 </body>
 </html>

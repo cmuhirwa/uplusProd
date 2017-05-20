@@ -121,56 +121,12 @@
 </style>
 <link rel="stylesheet" href="js/style.css" media="all">
 <script src="js/stripe.js"></script>
-<?php
-if(isset($_GET['forGroupId'])){
-	$forGroupId = $_GET['forGroupId'];
-	$forGroupName = $_GET['forGroupName'];
-	$currencyList="";
-	include "../db.php"; 
-	$sql = $db->query("SELECT * FROM currency"); // query the currencies
-	while($row = mysqli_fetch_array($sql)){
-		$currencyList.='<option value="'.$row['CurrencyCode'].'">'.$row['CurrencyName'].'</option>';
-	}
 
-	
-echo '<input id="forGroupId" hidden value="'.$forGroupId.'"/>';
-echo '<input id="forGroupName" hidden value="'.$forGroupName.'"/>';
-?>
-<form id="payform" method="post" action="../3rdparty/rtgs/transfer.php">
-<input name="bkVisa" hidden />
-<div class="form-style-2">
-	<label for="field1" style="width: 100%;">
-		<span style="font-size: 18px">Amount <span class="required">*</span>
-		</span>
-		<input placeholder="0.00" style="width: 45%;" class="input-field" name="field1" type="number" id="contributedAmount">
-		<span>
-			<select style="width: 33%;" class="select-field" name="currency" id="currency">
-				<option value="RWF">Rwandan Francs</option>
-				<?php echo $currencyList;?>
-			</select>
-		</span>
-	</label>
-	<h6><div id="amountError" style="color: #f44336;"></div></h6>
-	<div class="mdl-grid mdl-grid--no-spacing" >
-		<div class="mdl-cell mdl-cell--4-col pbtn" style="width: 30%"> <a href="javascript:void()" onclick="frontpayement2(method=1); alert()"><div style="border-radius: 3px; background-image: url(images/1.jpg); background-size: 100% 100%; height: 90px; margin: 5px; box-shadow: 0.5px 0.5px 0.25px 0.25px #888888;"></div></a></div>
-		<div class="mdl-cell mdl-cell--4-col pbtn" style="width: 30%"> <a href="javascript:void()" onclick="frontpayement2(method=2)"><div style="border-radius: 3px; background-image: url(images/2.jpg); background-size: 100% 100%; height: 90px; margin: 5px; box-shadow: 0.5px 0.5px 0.25px 0.25px #888888;"></div></a></div>
-		<div class="mdl-cell mdl-cell--4-col pbtn" style="width: 30%"> <a href="javascript:void()" onclick="payVisa()"><div  style="border-radius: 3px; background-image: url(../proimg/banks/4.png); background-size: 100% 100%; height: 90px; margin: 5px; box-shadow: 0.5px 0.5px 0.25px 0.25px #888888;"></div></a></div>
-	</div>
-</div>
-</form>
-<script>
-function payVisa()
- {
-      document.getElementById('payform').submit();
- }
-</script>
 <?php
-}
-elseif(isset($_GET['method'])){
+if(isset($_GET['method'])){
 	$method = $_GET['method'];
 	$forGroupId = $_GET['forGroupId1'];
 	$contributedAmount = $_GET['contributedAmount'];
-	$currency = $_GET['currency'];
 	
 	include("../db.php");
 	$sqlDestination = $outCon->query("SELECT * FROM group_account WHERE groupId = '$forGroupId'");
@@ -181,7 +137,6 @@ elseif(isset($_GET['method'])){
 	
 	echo'<input type="hidden" id="opperator" value="'.$method.'">';
 	echo'<input type="number" hidden id="forGroupId" value="'.$forGroupId.'">';
-	echo'<input type="text" hidden id="currency" value="'.$currency.'">';
 	echo'<input type="text" hidden id="amountdone" value="'.$contributedAmount.'">';
 	echo'<input type="text" hidden id="sendToAccount" value="'.$bankaccount.'">';
 	echo'<input type="text" hidden id="sendToBank" value="'.$groupBank.'">';
@@ -384,79 +339,6 @@ elseif($method == '4'){echo'
 }
 ?>
 
-<script src="js/js.js"></script>
-<script src="js/jquery.js"></script>
-
-
-<script>
-function frontpayement2(method){
-	//alert(method);
-	var contributedAmount =$("#contributedAmount").val();
-	var currency =$("#currency").val();
-	var forGroupId =$("#forGroupId").val();
-	if (contributedAmount == null || contributedAmount == "") 
-		{
-			document.getElementById('amountError').innerHTML = 'Contributed Amount must be  out';
-			return false;
-		}
-	if (contributedAmount < 100) 
-		{
-			document.getElementById('amountError').innerHTML = 'The minimum contribution allowed is 100 Rwf';
-			return false;
-		}
-		document.getElementById('contBody').innerHTML = '<div style="margin: 100px;">Loading...</div>';
-			
-		//alert(forGroupId);
-	$.ajax({
-			type : "GET",
-			url : "payments.php",
-			dataType : "html",
-			cache : "false",
-			data : {
-				method : method,
-				currency : currency,
-				contributedAmount : contributedAmount,
-				forGroupId1 : forGroupId,
-			},
-			success : function(html, textStatus){
-				$("#contBody").html(html);
-			},
-			error : function(xht, textStatus, errorThrown){
-				alert("Error : " + errorThrown);
-			}
-	});
-}
-</script>
-<!--Give pay Button-->
-<script>
-  function handleChange(input) {
-	  var method = document.getElementById('opperator').value;
-	  if (method == '1') {
-		  var opperator = 'MTN';
-		  var errorcolor = '#e91e63;';
-		  }
-	  else if (method == '2') {
-		  var opperator = 'TIGO';
-		  var errorcolor = '#fff;';
-		  }
-	  else if (method == '3') {
-		  var opperator = 'AIRTEL';
-		  var errorcolor = '#fff;';
-		  }
-    if ( input.value < 1000000) {
-		document.getElementById('alowMtn').innerHTML = '<div style="color: '+errorcolor+'"> Keep typing till you get a Done button</div>';
-		document.getElementById('doneMtn').innerHTML = '';
-	}
-    else if (input.value > 9999999) {
-		document.getElementById('alowMtn').innerHTML = '<div style="color: '+errorcolor+'">Please enter a valid '+opperator+' Rwanda number</div>';
-		document.getElementById('doneMtn').innerHTML = '';
-	}else{
-		document.getElementById('alowMtn').innerHTML = '';
-		document.getElementById('doneMtn').innerHTML = '<button class="myButton" onclick="kwishura()"><i class="icon md-check"></i>Done</button>';
-	}
-  }
-  
-</script>
 <script>
 // Display a recurrunf Invitation
 function kwishura(){
