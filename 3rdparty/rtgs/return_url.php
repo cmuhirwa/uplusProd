@@ -35,7 +35,7 @@ if($transaction['status'] == "0" && $transaction['message'] == "Approved") {
 } else {
 
     // Display error
-	echo $transaction['status'] = getInput('vpc_TxnResponseCode') .'<br>';
-	echo $transaction['key']    = getInput('vpc_TransactionNo') .'<br>';
+	//echo $transaction['status'] = getInput('vpc_TxnResponseCode') .'<br>';
+	//echo $transaction['key']    = getInput('vpc_TransactionNo') .'<br>';
 	echo $transaction['message'] = getInput('vpc_Message');
 }
