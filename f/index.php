@@ -436,9 +436,9 @@ else{
 							</label>
 							<h6><div id="amountError" style="color: #f44336;"></div></h6>
 							<div class="mdl-grid mdl-grid--no-spacing" >
-								<div style="width: 30%"> <a href="javascript:void()" onclick="frontpayement2(method=1)"><div style="border-radius: 3px; background-image: url(images/1.jpg); background-size: 100% 100%; height: 90px; margin: 5px; box-shadow: 0.5px 0.5px 0.25px 0.25px #888888;"></div></a></div>
-								<div style="width: 30%"> <a href="javascript:void()" onclick="frontpayement2(method=2)"><div style="border-radius: 3px; background-image: url(images/2.jpg); background-size: 100% 100%; height: 90px; margin: 5px; box-shadow: 0.5px 0.5px 0.25px 0.25px #888888;"></div></a></div>
-								<div style="width: 30%"> <a href="javascript:void()" onclick="payVisa()"><div  style="border-radius: 3px; background-image: url(../proimg/banks/4.png); background-size: 100% 100%; height: 90px; margin: 5px; box-shadow: 0.5px 0.5px 0.25px 0.25px #888888;"></div></a></div>
+								<div style="width: 33%"> <a href="javascript:void()" onclick="frontpayement2(method=1)"><div style="border-radius: 3px; background-image: url(images/1.jpg); background-size: 100% 100%; height: 90px; margin: 5px; box-shadow: 0.5px 0.5px 0.25px 0.25px #888888;"></div></a></div>
+								<div style="width: 33%"> <a href="javascript:void()" onclick="frontpayement2(method=2)"><div style="border-radius: 3px; background-image: url(images/2.jpg); background-size: 100% 100%; height: 90px; margin: 5px; box-shadow: 0.5px 0.5px 0.25px 0.25px #888888;"></div></a></div>
+								<div style="width: 33%"> <a href="javascript:void()" onclick="payVisa()"><div  style="border-radius: 3px; background-image: url(../proimg/banks/4.png); background-size: 100% 100%; height: 90px; margin: 5px; box-shadow: 0.5px 0.5px 0.25px 0.25px #888888;"></div></a></div>
 							</div>
 						</div>
 					</form>
@@ -555,9 +555,9 @@ function frontpayement2(method)
 			document.getElementById('amountError').innerHTML = 'Contributed Amount must be  out';
 			return false;
 		}
-	if (contributedAmount < 100) 
+	if (contributedAmount < 500) 
 		{
-			document.getElementById('amountError').innerHTML = 'The minimum contribution allowed is 100 Rwf';
+			document.getElementById('amountError').innerHTML = 'The minimum contribution allowed is 500 Rwf';
 			return false;
 		}
 		document.getElementById('contBody').innerHTML = '<div style="margin: 100px;">Loading...</div>';
@@ -582,7 +582,19 @@ function frontpayement2(method)
 }
 function payVisa()
  {
-      document.getElementById('payform').submit();
+	var contributedAmount =$("#contributedAmount").val();
+	if (contributedAmount == null || contributedAmount == "") 
+		{
+			document.getElementById('amountError').innerHTML = 'Contributed Amount must be  out';
+			return false;
+		}
+	if (contributedAmount < 500) 
+		{
+			document.getElementById('amountError').innerHTML = 'The minimum contribution allowed is 500 Rwf';
+			return false;
+		}
+	document.getElementById('payform').submit();
+	document.getElementById('contBody').innerHTML ='<div class="loader"></div>';
  }
 </script>
 <!-- GET ME THE DONE BTN -->
