@@ -302,11 +302,13 @@ if(isset($_GET['check']))
 
 <?php // VISA AND MASTER CARDS
 if(isset($_POST['bkVisa'])){
+	$rand = rand(30000, 99999);
 	require __DIR__ . '/function.php';
 	$amount = $_POST['field1'];
 	$currency = $_POST['currency'];
-	$orderInfo = 'ORDER34525';
-	
+	$orderInfo = 'ORDER'.$rand;
+	session_start();
+	$_SESSION['orderInfo'] = $orderInfo;
 	$accountData = array(
 		'merchant_id' => 'TESTBOK000009',
 		'access_code' => '325B081C',
@@ -332,7 +334,7 @@ if(isset($_POST['bkVisa'])){
 		'vpc_Currency' => $currency,
 		'vpc_Locale' => 'en',
 		'vpc_Version' => 1,
-		'vpc_ReturnURL' => 'http://localhost/payments/bk/return_url.php',
+		'vpc_ReturnURL' => 'http://localhost/uplusProd/3rdparty/rtgs/return_url.php',
 
 		'vpc_SecureHashType' => 'SHA256'
 	);
