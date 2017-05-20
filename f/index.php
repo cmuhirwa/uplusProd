@@ -538,6 +538,7 @@ document.getElementById("defaultOpen").click();
 <script src="js/js.js"></script>
 
 <!-- SEND METHOD AND GET ME THE PHONE INPUT-->
+<!-- SEND METHOD AND GET ME THE PHONE INPUT-->
 <script>
 function frontpayement2(method)
 {
@@ -634,5 +635,6 @@ function handleChange(input)
 	}
 }
 </script>
+
 </body>
 </html>
