@@ -4,7 +4,7 @@ include 'db.php';
 $transactions="";
 $sql =$con->query("
 	select
-	tv.amount, tv.status, tv.3rdpartyId, tv.operation, tv.transaction_date, tv.bankName, tv.account_id accountId, tv.bankId, tv.clientId , tv.clientName, tv.to_from_client fromClientId,tv.to_from_account fromAccountId, 
+	tv.trans_id, tv.amount, tv.status, tv.3rdpartyId, tv.operation, tv.transaction_date, tv.bankName, tv.account_id accountId, tv.bankId, tv.clientId , tv.clientName, tv.to_from_client fromClientId,tv.to_from_account fromAccountId, 
 	bc.accountNumber fromAccount, tv.to_from_bank fromBankId, b.name fromBank, c.name fromClient
 	from transactionsview tv
 	INNER JOIN bank_client bc
@@ -17,7 +17,32 @@ $sql =$con->query("
 	");
 $n=0;
 while ($row=mysqli_fetch_array($sql)) {
+	$trans_id = $row['trans_id'];
+	$trans_id = $trans_id + 1;
+	$sqlstatus = $con->query("SELECT status FROM transactions WHERE id = '$trans_id'");
+	$row2 = mysqli_fetch_array($sqlstatus);
+	$status2 = $row2['status'];
 	$n++;
+	if($row['status']=='Approved' || $row['status']=='APPROVED'){
+		$bg="#4caf50";
+	}
+	elseif($row['status']=='DECLINED'){
+		$bg="#f44336";
+	}
+	else{
+		$bg="#000";
+	}
+	if($status2=='COMPLETE'){
+		$bg2="#4caf50";
+	}
+	elseif($status2=='DECLINED' || $status2=='Error sending money.'){
+		$bg2="#f44336";
+	}
+	else{
+		$bg2="#000";
+	}
+	$link1="'account.php?accountId=".$row['accountId']."&clientId=".$row['clientId']."&page=".$row['bankId']."'";
+	$link2="'account.php?accountId=".$row['fromAccountId']."&clientId=".$row['fromClientId']."&page=".$row['fromBankId']."'";
 	$transactions.= '
 		<tbody>
 			<tr>
@@ -25,9 +50,9 @@ while ($row=mysqli_fetch_array($sql)) {
 				<td>'.number_format($row['amount']).'</td>
 				<td>'.$row['status'].'</td>
 				<td>'.$row['3rdpartyId'].'</td>
-				<td>'.$row['transaction_date'].'</td>
-				<td><a href="account.php?accountId='.$row['accountId'].'&clientId='.$row['clientId'].'&page='.$row['bankId'].'">'.$row['clientName'].' | '.$row['bankName'].'</a></td>
-				<td><a href="account.php?accountId='.$row['fromAccountId'].'&clientId='.$row['fromClientId'].'&page='.$row['fromBankId'].'">'.$row['fromClient'].'| '.$row['fromBank'].'</a></td>
+				<td>'.strftime("%d %b", strtotime($row['transaction_date'])).'</td>
+				<td style="background: '.$bg.'; cursor: pointer; color: #fff" onclick="location.href = '.$link1.'">'.$row['clientName'].' | '.$row['bankName'].'</td>
+				<td style="background: '.$bg2.'; cursor: pointer; color: #fff" onclick="location.href = '.$link2.'">'.$row['fromClient'].'| '.$row['fromBank'].'</td>
 			</tr>
 		</tbody>';
 	}	
@@ -103,7 +128,7 @@ while ($row=mysqli_fetch_array($sql)) {
 							<th>Amount</th>
 							<th>Status</th>
 							<th>3rdpartyId</th>
-							<th>Date</th>
+							<th>Date__</th>
 							<th>From</th>
 							<th>To</th>
 						</tr>
