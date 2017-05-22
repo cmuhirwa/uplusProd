@@ -411,7 +411,7 @@ if(isset($_POST['bkVisa'])){
 		'vpc_Currency' => $currency,
 		'vpc_Locale' => 'en',
 		'vpc_Version' => 1,
-		'vpc_ReturnURL' => 'http://localhost/uplusProd/3rdparty/rtgs/return_url.php',
+		'vpc_ReturnURL' => 'http://uplusrwanda.cloudapp.net/3rdparty/rtgs/return_url.php',
 
 		'vpc_SecureHashType' => 'SHA256'
 	);
