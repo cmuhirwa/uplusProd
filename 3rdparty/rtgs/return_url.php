@@ -23,7 +23,7 @@ if($transaction['status'] == "0" && $transaction['message'] == "Approved")
 	$transactionId1 = $transaction['key'];
 	 $transaction['orderInfo'];
 	session_start();
-	echo $fromTransactionId	= $_SESSION['fromTransactionId'];
+	$fromTransactionId	= $_SESSION['fromTransactionId'];
 	$ToTransactionId	= $_SESSION['ToTransactionId'];
 	$phone2				= '25'.$_SESSION['phone2'];
 	include('db.php');
