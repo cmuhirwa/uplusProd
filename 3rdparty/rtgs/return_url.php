@@ -1,16 +1,8 @@
 <?php
-//error_reporting(E_ALL);
-//ini_set('display_errors', 0);
-/**
- * A sample code to illustrate how a payment response will be handled.
- *
- * This sample is only for illustration and hasn't been tested yet.
- * 
- * @author Kareem Mohamed <kareem3d.a@gmail.com> 
- */
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
 
 require __DIR__ . '/function.php';
-include('db.php');
 $transaction['status'] = getInput('vpc_TxnResponseCode');
 $transaction['key']    = getInput('vpc_TransactionNo');
 $transaction['message'] = getInput('vpc_Message');
@@ -34,18 +26,8 @@ if($transaction['status'] == "0" && $transaction['message'] == "Approved")
 	 $fromTransactionId	= $_SESSION['fromTransactionId'];
 	 $ToTransactionId	= $_SESSION['ToTransactionId'];
 	$phone2				= '25'.$_SESSION['phone2'];
-	$Update1= $con->query("UPDATE `transactions` SET status='$check1', 3rdpartyId='$transactionId1' WHERE id = '$fromTransactionId'");
-}
-
-else 
-{
-
-    // Display error
-	//echo $transaction['status'] = getInput('vpc_TxnResponseCode') .'<br>';
-	//echo $transaction['key']    = getInput('vpc_TransactionNo') .'<br>';
-	echo $transaction['message'] = getInput('vpc_Message');
-}
-
+	include('db.php');
+	$Update1= $con->query("UPDATE `transactions` SET status='$check1', 3rdpartyId='$transactionId1' WHERE id = '$fromTransactionId'")or Die(mysqli_error());
 ?>
 <div id="result"></div>
 <div id="status"></div>
@@ -108,3 +90,13 @@ function stopit()
 		//document.getElementById('status').innerHTML = 'Canceled.';
 	}
 </script>
+
+<?php
+}
+
+else 
+{
+	echo $transaction['message'] = getInput('vpc_Message');
+}
+
+?>
