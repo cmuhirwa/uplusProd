@@ -2,7 +2,7 @@
 
 <h5>
 
-<?php
+<?php // MTN AND TIGO TRANSFERS
 error_reporting(E_ALL);
 ini_set('display_errors', 0);
 	
@@ -104,7 +104,7 @@ if (isset($_GET['sentAmount'])) {
 	}
 // STRAT API HERE //////////////////////////
 			
-			$url = 'http://51.141.48.174:9000/requestpayment/';
+	$url = 'http://51.141.48.174:9000/requestpayment/';
 	
 	$data = array();
 	$data["agentName"] = "UPLUS";
@@ -300,15 +300,92 @@ if(isset($_GET['check']))
 </h5>
 </div>
 
-<?php // VISA AND MASTER CARDS
+<script>
+	sendFromAccount	:	create client, get cId, create account, get aId,
+	sendFromName	:	Testor,
+	sendFromBank	:   5,
+	sendToBank		:   sendToBank,
+	sendToAccount	:   sendToAccount,
+</script>
+
+<?php // BK VISA AND MASTER CARDS TRANSFERS
 if(isset($_POST['bkVisa'])){
-	$rand = rand(30000, 99999);
+	$forGroupId = $_POST['forGroupId'];
+	$sentAmount = $_POST['field1'];
+		
+// Start Get group info
+	$sqlDestination = $con->query("SELECT * FROM group_account WHERE groupId = '$forGroupId'");
+	while($row = mysqli_fetch_array($sqlDestination)){
+		$sendToAccount = $row['accountNumber'];
+		$sendToBank = $row['bankId'];
+	}
+// End GET group info
+
+//START GET RECIEVER'S INFO
+	$sqlGetReceiverInfo = $con -> query("SELECT * FROM bank_accounts WHERE accountNumber ='$sendToAccount' AND bankId ='$sendToBank' limit 1");
+	$rowSendTo		= 	mysqli_fetch_array($sqlGetReceiverInfo);
+	$sendToBankId 	= 	$rowSendTo['bankId'];
+	$sendToAccountId= 	$rowSendTo['accountId'];
+	$sendToClientId = 	$rowSendTo['clientId'];
+// END GET RECIEVER'S INFO	
+
+
+	//START CHECK IF THE SENDER IS NOT NEW
+	$sqlCheckSenderExist = $con -> query("SELECT * FROM bank_accounts WHERE accountNumber ='VISA/MASTER' AND bankId ='5' limit 1");
+	$countExistSenderAccount = mysqli_num_rows($sqlCheckSenderExist);
+  //START IF SENDER EXISTS
+	if($countExistSenderAccount > 0){
+	//START GET SENDER'S INFO
+		$rowSendFrom 		= 	mysqli_fetch_array($sqlCheckSenderExist);
+		$sendFromBankId		= 	$rowSendFrom['bankId'];
+		$sendFromAccountId	=	$rowSendFrom['accountId'];
+		$sendFromClientId 	= 	$rowSendFrom['clientId'];
+	//END GET SENDER'S INFO
+	
+	}
+	else{
+	$sql = $con->query("insert into clients(name) values('Testor')");
+	$sqllaststu= $con->query("select id from clients order by id desc limit 1");
+	$laststu_id=$row=mysqli_fetch_array($sqllaststu);
+	$client_id=$row['id'];
+	$sqlsklstu= $con->query("insert into bank_client(client_id, bank_id, accountNumber) 
+	  values('$client_id','5','VISA/MASTER')")or mysqli_error();
+	
+	$sqllastAccount= $con->query("SELECT * FROM bank_accounts WHERE accountNumber ='VISA/MASTER' AND bankId ='5' limit 1");
+	$rowSendFrom = mysqli_fetch_array($sqllastAccount);
+	$sendFromBankId		= 	$rowSendFrom['bankId'];
+	$sendFromAccountId	=	$rowSendFrom['accountId'];
+	$sendFromClientId 	= 	$rowSendFrom['clientId'];
+	}
+
+// START DEBIT THE SENDER
+	$sqlRemoveAmount= $con->query("INSERT INTO transactions(forGroupId,amount,account_id,bank_id,client_id,operation,to_from_client,to_from_bank,to_from_account, status, 3rdparty) 
+									VALUES('$forGroupId','$sentAmount','$sendFromAccountId','$sendFromBankId','$sendFromClientId','debit','$sendToClientId','$sendToBankId','$sendToAccountId', 'called', 'BK')") or mysqli_error();
+	$sqlRemovedId= $con->query("select id from transactions order by id desc limit 1");
+	$remId = mysqli_fetch_array($sqlRemovedId);
+	$fromTransactionId =$remId['id'];
+// END DEBIT THE SENDER	
+	
+	// START CREDIT THE RECIEVER
+		$sqlAddAmount= $con->query("INSERT INTO transactions(forGroupId,amount,account_id,bank_id,client_id,operation,to_from_client,to_from_bank,to_from_account, status, 3rdparty) 
+										VALUES('$forGroupId','$sentAmount','$sendToAccountId','$sendToBankId','$sendToClientId','credit','$sendFromClientId','$sendFromBankId','$sendFromAccountId', 'called', 'TORQUE')") or mysqli_error();
+		$sqlAddId= $con->query("select id from transactions order by id desc limit 1");
+		$AddId =mysqli_fetch_array($sqlAddId);
+		$ToTransactionId =$AddId['id'];
+	// END CREDIT THE RECIEVER
+
+	
+	
+	//$rand = rand(30000, 99999);
 	require __DIR__ . '/function.php';
 	$amount = $_POST['field1'];
 	$currency = $_POST['currency'];
-	$orderInfo = 'ORDER'.$rand;
+	$orderInfo = $fromTransactionId;
 	session_start();
-	$_SESSION['orderInfo'] = $orderInfo;
+	$_SESSION['fromTransactionId'] = $fromTransactionId;
+	$_SESSION['ToTransactionId'] = $ToTransactionId;
+	$_SESSION['phone2'] = $sendToAccount;
+	$_SESSION['amount'] = $amount;
 	$accountData = array(
 		'merchant_id' => 'TESTBOK000009',
 		'access_code' => '325B081C',
@@ -334,7 +411,7 @@ if(isset($_POST['bkVisa'])){
 		'vpc_Currency' => $currency,
 		'vpc_Locale' => 'en',
 		'vpc_Version' => 1,
-		'vpc_ReturnURL' => 'http://uplusrwanda.cloudapp.net/3rdparty/rtgs/return_url.php',
+		'vpc_ReturnURL' => 'http://localhost/uplusProd/3rdparty/rtgs/return_url.php',
 
 		'vpc_SecureHashType' => 'SHA256'
 	);
@@ -349,7 +426,10 @@ if(isset($_POST['bkVisa'])){
 	header("Location: " . $migsUrl);
 
 }
-	
+?>
+
+
+<?PHP // STRIPE VISA AND MASTER CARDS TRANSFERS	
 if(isset($_POST['stripeToken'])){
 	session_start();
 	$originalPhone = '784848236';
