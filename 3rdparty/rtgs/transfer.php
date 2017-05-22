@@ -379,7 +379,7 @@ if(isset($_POST['bkVisa'])){
 	//$rand = rand(30000, 99999);
 	require __DIR__ . '/function.php';
 	$amount = $_POST['field1'];
-	$currency = $_POST['currency'];
+	$currency = 'RWF';//$_POST['currency'];
 	$orderInfo = $fromTransactionId;
 	session_start();
 	$_SESSION['fromTransactionId'] = $fromTransactionId;
@@ -411,7 +411,7 @@ if(isset($_POST['bkVisa'])){
 		'vpc_Currency' => $currency,
 		'vpc_Locale' => 'en',
 		'vpc_Version' => 1,
-		'vpc_ReturnURL' => 'http://uplusrwanda.cloudapp.net/3rdparty/rtgs/return_url.php',
+		'vpc_ReturnURL' => 'http://localhost/uplusProd/3rdparty/rtgs/return_url.php',
 
 		'vpc_SecureHashType' => 'SHA256'
 	);
