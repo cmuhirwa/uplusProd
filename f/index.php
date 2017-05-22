@@ -254,7 +254,7 @@ else{
 	</div>
 			<div style="margin: -5px 0 0 -5px; max-height: 176px;overflow: hidden;">
 				<p>
-					<a class="fancybox-thumbs" data-fancybox-group="thumb" href="../temp/group<?php echo $groupID;?>.jpeg"><span style="background-image: url(../temp/group<?php echo $groupID;?>.jpeg);" class="gallery"></span></a>
+					<a class="fancybox-thumbs" data-fancybox-group="thumb" href="../temp/supper<?php echo $groupID;?>.jpg"><span style="background-image: url(../temp/group<?php echo $groupID;?>.jpeg);" class="gallery"></span></a>
 	
 	</p>
 			</div>
@@ -263,12 +263,12 @@ else{
 
 					<div class="contributors">
 	<h5 style="text-align: center; font-size: 17px;"><i class="fa fa-group"></i> <?php 
-							$sqlcountcontr = $outCon->query("SELECT `amount` FROM `transactionsview` WHERE `operation` = 'debit' and`forGroupId` = '$groupID'");
+							$sqlcountcontr = $outCon->query("SELECT `amount` FROM `transactionsview` WHERE `operation` = 'debit' and `forGroupId` = '$groupID' AND status = 'Approved'");
 							echo $countContr = mysqli_num_rows($sqlcountcontr);
 							?> Contributors</h5><hr style="margin-top: 18px;margin-bottom: 20px;border: 0; border-top: 1px solid #616161;">
 	<div>
 								<?php 
-							$sqlcontributors = $outCon->query("SELECT `amount`, clientName FROM `transactionsview` WHERE `operation` = 'debit' and`forGroupId` = '$groupID' ORDER BY amount DESC limit 5");
+							$sqlcontributors = $outCon->query("SELECT `amount`, clientName FROM `transactionsview` WHERE `operation` = 'debit' and`forGroupId` = '$groupID' AND status = 'Approved' ORDER BY amount DESC limit 5");
 							$ncontrib = 0;
 							while($row = mysqli_fetch_array($sqlcontributors))
 							{
@@ -299,12 +299,13 @@ else{
 				<section class="section--center mdl-grid mdl-grid--no-spacing" style="margin-bottom: 95px; max-width: 730px; padding-top: 50px;">
 					<div style="    background: linear-gradient(to bottom,transparent 0,rgba(0,0,0,.82) 100%);
     text-shadow: 2px 2px 14px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);
-    margin: 220px 0 0 0;
+        margin: 238px 0 0 0;
     padding: 0 15px;
-	position: absolute;    width: 100%;
-    height: 37%;">
-					<h3 style="color: #f5f5f5;
-"><?php echo $groupName;?></h3>
+    position: absolute;
+    width: 100%;
+    height: 33%;">
+					<h4 style="color: #f5f5f5; font-size: 28px;
+"><?php echo $groupName;?></h4>
 					<h6 style="font-size: 18px; color: #e1eae9;
 "><?php echo $groupDesc;?><br><br></h6>
 
@@ -321,7 +322,7 @@ else{
 							<b style="float: right;"><?php echo number_format($saving);?>Rwf</b>
 						</div>
 						<div class="progress" style="background-color: #e1eae9;">
-							<div class="progress-bar progress-bar-striped active" role="progressbar" aria-valuenow="<?php echo $prog;?>" aria-valuemin="0" aria-valuemax="100" style="width:<?php echo $prog;?>%">
+							<div class="progress-bar progress-bar-striped active" role="progressbar" aria-valuenow="<?php echo $prog;?>" aria-valuemin="0" aria-valuemax="100" style="width:<?php if($prog < 10){echo 10;} else{echo $prog;}?>%">
 							  <?php echo number_format($prog);?>%
 							</div>
 						</div>
@@ -416,34 +417,44 @@ else{
 		      </main>
 		    </div>
 			<dialog id="dialog" class="mdl-dialog" style="padding:0px;">
-				<div class="mdl-dialog__actions" style="padding:2px;text-align: center; display: block;font-size: 20px;    background: #007569; color: #fff;">
+				<div class="mdl-dialog__actions" style="padding:10px;text-align: center; display: block;font-size: 20px;    background: #007569; color: #fff;">
 					Money Transfer
 				</div>
 				<div class="mdl-dialog__content" style="padding:0px; border-bottom: solid #ccc 0.1px;" id="contBody">
 					<form id="payform" method="post" action="../3rdparty/rtgs/transfer.php">
 						<input name="bkVisa" hidden />
-						<div class="form-style-2">
+						<input name="forGroupId" value="<?php echo $groupID;?>" hidden />
+						<div class="form-style-2" style="padding: 15px;">
 							<label for="field1" style="width: 100%;">
-								<span style="font-size: 18px">Amount <span class="required">*</span>
+								<span style="font-size: 20px">Amount <span class="required">*</span>
 								</span>
-								<input placeholder="0.00" style="width: 45%;" class="input-field" name="field1" type="number" id="contributedAmount">
+								<input placeholder="0.00" style="width: 45%; height: 30px;font-size: 20px;" class="input-field" name="field1" type="number" id="contributedAmount">
 								<span>
-									<select style="width: 33%;" class="select-field" name="currency" id="currency">
+									<select disabled style="width: 33%;height: 30px; padding-top: 3px; font-size: 16px;" class="select-field" name="currency" id="currency">
 										<option value="RWF">Rwandan Francs</option>
 										<option value="USD">US Dolar</option>
 									</select>
 								</span>
 							</label>
-							<h6><div id="amountError" style="color: #f44336;"></div></h6>
+							<h6><div id="amountError" style="color: #f44336;"></div></h6><br>
 							<div class="mdl-grid mdl-grid--no-spacing" >
-								<div style="width: 33%"> <a href="javascript:void()" onclick="frontpayement2(method=1)"><div style="border-radius: 3px; background-image: url(images/1.jpg); background-size: 100% 100%; height: 90px; margin: 5px; box-shadow: 0.5px 0.5px 0.25px 0.25px #888888;"></div></a></div>
-								<div style="width: 33%"> <a href="javascript:void()" onclick="frontpayement2(method=2)"><div style="border-radius: 3px; background-image: url(images/2.jpg); background-size: 100% 100%; height: 90px; margin: 5px; box-shadow: 0.5px 0.5px 0.25px 0.25px #888888;"></div></a></div>
-								<div style="width: 33%"> <a href="javascript:void()" onclick="payVisa()"><div  style="border-radius: 3px; background-image: url(../proimg/banks/4.png); background-size: 100% 100%; height: 90px; margin: 5px; box-shadow: 0.5px 0.5px 0.25px 0.25px #888888;"></div></a></div>
+								<div style="width: 33%; height:90px;"> 
+									<div onclick="frontpayement2(method=1)" style="cursor: pointer; border-radius: 4px; background-image: url(images/1.jpg); background-size: 100% 100%; height: 100%; width: 90%; margin: 0 auto; box-shadow: 0.5px 0.5px 0.25px 0.25px #888888;"></div>
+									
+								</div>
+								<div style="width: 33%; height:90px;"> 
+										<div onclick="frontpayement2(method=2)" style="cursor: pointer; border-radius: 4px; background-image: url(images/2.jpg); background-size: 100% 100%; height: 100%; width: 90%; margin: 0 auto; box-shadow: 0.5px 0.5px 0.25px 0.25px #888888;"></div>
+									
+								</div>
+								<div style="width: 33%; height:90px;"> 
+										<div  onclick="payVisa()" style="cursor: pointer; border-radius: 4px; background-image: url(../proimg/banks/4.png); background-size: 100% 100%; height: 100%; width: 90%; margin: 0 auto; box-shadow: 0.5px 0.5px 0.25px 0.25px #888888;"></div>
+									
+								</div>
 							</div>
 						</div>
 					</form>
 				</div>
-				<div class="mdl-dialog__actions" id="actionbc" style="padding:0px; display: block;">
+				<div class="mdl-dialog__actions" id="actionbc" style="padding:0px; background: #ccc; display: block;">
 					<button type="button" class="mdl-button btn-danger">Close</button>
 				</div>
 			</dialog>	 
@@ -538,7 +549,6 @@ document.getElementById("defaultOpen").click();
 <script src="js/js.js"></script>
 
 <!-- SEND METHOD AND GET ME THE PHONE INPUT-->
-<!-- SEND METHOD AND GET ME THE PHONE INPUT-->
 <script>
 function frontpayement2(method)
 {
@@ -581,6 +591,10 @@ function frontpayement2(method)
 			}
 	});
 }
+</script>
+
+<!-- SUBMIT VISA CARDS-->
+<script>
 function payVisa()
  {
 	var contributedAmount =$("#contributedAmount").val();
@@ -598,6 +612,7 @@ function payVisa()
 	document.getElementById('contBody').innerHTML ='<div class="loader"></div>';
  }
 </script>
+
 <!-- GET ME THE DONE BTN -->
 <script>
 function handleChange(input)
@@ -635,6 +650,5 @@ function handleChange(input)
 	}
 }
 </script>
-
 </body>
 </html>
