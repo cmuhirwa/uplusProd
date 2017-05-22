@@ -23,11 +23,11 @@ if($transaction['status'] == "0" && $transaction['message'] == "Approved")
 	$transactionId1 = $transaction['key'];
 	 $transaction['orderInfo'];
 	session_start();
-	 $fromTransactionId	= $_SESSION['fromTransactionId'];
-	 $ToTransactionId	= $_SESSION['ToTransactionId'];
+	echo $fromTransactionId	= $_SESSION['fromTransactionId'];
+	$ToTransactionId	= $_SESSION['ToTransactionId'];
 	$phone2				= '25'.$_SESSION['phone2'];
 	include('db.php');
-	$Update1= $con->query("UPDATE `transactions` SET status='$check1', 3rdpartyId='$transactionId1' WHERE id = '$fromTransactionId'")or Die(mysqli_error());
+	$Update1= $con->query("UPDATE transactions SET status='$check1', 3rdpartyId='$transactionId1' WHERE id = '$fromTransactionId'")or Die(mysqli_error());
 ?>
 <div id="result"></div>
 <div id="status"></div>
