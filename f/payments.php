@@ -143,7 +143,7 @@ if(isset($_GET['method'])){
 			
 if($method == '1'){
 	?>
-	<div class="widget-body widget-content"  style="background-color: #FFBE00; height:100%;">
+	<div class="widget-body widget-content"  style="background-color: #FFBE00; padding: 15px; height:100%;">
 	<script>document.getElementById('actionbc').innerHTML ='<button onclick="frontpayementOptions()" class="mdl-button btn-danger"><i class="fa fa-arrow-left"></i> Back</button>';
 			</script>		
 	<div class="mdl-card__supporting-text">
@@ -180,7 +180,7 @@ if($method == '1'){
 </div>	
 <?php }
 elseif($method == '2'){?>
-<div class="widget-body widget-content"  style="background-color: #002e6e; height:100%;">
+<div class="widget-body widget-content"  style="background-color: #002e6e; padding: 15px; height:100%;">
 	<div class="mdl-card__supporting-text" >
 		<script>document.getElementById('actionbc').innerHTML ='<button onclick="frontpayementOptions()" class="mdl-button btn-danger"><i class="fa fa-arrow-left"></i> Back</button>';
 			</script>	
